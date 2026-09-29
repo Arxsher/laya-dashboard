@@ -11,14 +11,12 @@
     decisions: { total: 77, hold: 77, long: 0, short: 0 },
     latest_decision: { ts: '2026-09-29T11:48:14Z', action: 'HOLD', confidence: 0.5593, reason: 'model says HOLD (0.559)' },
     recent_decisions: [
-      { ts: '2026-09-29T11:48:14Z', action: 'HOLD', confidence: 0.5593, reason: 'model says HOLD (0.559)' },
-      { ts: '2026-09-29T11:47:14Z', action: 'HOLD', confidence: 0.612, reason: 'model says HOLD (0.612)' },
-      { ts: '2026-09-29T11:46:14Z', action: 'HOLD', confidence: 0.588, reason: 'model says HOLD (0.588)' }
+      { ts: '2026-09-29T11:48:14Z', action: 'HOLD', confidence: 0.5593, reason: 'model says HOLD (0.559)' }
     ],
     trades: [],
     model: { version: 'v4', accuracy: 0.7731, auc: 0.8954, recall_short: 0.761, recall_hold: 0.787, recall_long: 0.775, ece: 0.0039,
              backtest_bps: { '0.55': 2.36, '0.60': 2.67, '0.70': 3.27, '0.75': 3.42 } },
-    updated_utc: '2026-09-29T11:54:00Z'
+    updated_utc: '2026-09-29T11:48:51Z'
   };
 
   /* ---------------- coins ---------------- */
