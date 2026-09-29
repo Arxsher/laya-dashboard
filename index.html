@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Laya — live command center for an autonomous BTC trading bot on OKX demo. Real prices, real decisions, zero fake data." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 18.5 9.4 13l3.2 3.1L20 8.5' fill='none' stroke='%23ff7145' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M14.7 8.5H20v5.3' fill='none' stroke='%23ff7145' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <title>Laya — BTC Trading Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand" aria-label="Laya">
+      <svg viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M4 18.5 9.4 13l3.2 3.1L20 8.5" fill="none" stroke="#ff7145" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.7 8.5H20v5.3" fill="none" stroke="#ff7145" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="6" r="2" fill="#17191d"/><circle cx="11" cy="8" r="1.4" fill="#17191d"/><path d="M7.7 6.8 9.8 7.6" stroke="#17191d" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>Laya</span>
+    </div>
+    <nav class="main-nav" aria-label="Primary navigation">
+      <button class="nav-item active" data-tab="dashboard">Dashboard</button>
+      <button class="nav-item" data-tab="trade">Trade</button>
+      <button class="nav-item" data-tab="market">Market</button>
+      <button class="nav-item" data-tab="analytics">Analytics</button>
+      <button class="nav-item" data-tab="portfolio">Portfolio</button>
+      <button class="nav-item" data-tab="otc">OTC</button>
+    </nav>
+    <div class="top-actions">
+      <label class="search" aria-label="Search">
+        <svg fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <input id="globalSearch" placeholder="Search here..." />
+        <span class="key">⌘ K</span>
+      </label>
+      <button class="icon-btn" id="themeBtn" aria-label="Adjust appearance"><svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg></button>
+      <div style="position:relative">
+        <button class="icon-btn notice" id="bellBtn" aria-label="Notifications"><svg fill="none" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7Z"/><path d="M10 20h4"/></svg></button>
+        <div class="drop" id="bellDrop" hidden></div>
+      </div>
+      <button class="icon-btn" id="helpBtn" aria-label="Help"><svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 1 1 3.5 2.1c-.8.4-1.2.9-1.2 1.9M12 17h.01"/></svg></button>
+      <div style="position:relative">
+        <button class="profile" id="profileBtn" aria-expanded="false">
+          <span class="avatar">DA</span><span class="who"><strong>Demo Account</strong><span>OKX demo</span></span>
+          <svg class="chev" fill="none" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>
+        </button>
+        <div class="drop" id="profileDrop" hidden></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- ============ DASHBOARD ============ -->
+    <section class="view active" data-view="dashboard">
+      <div class="layout">
+        <div class="main-column">
+          <div class="stats" id="statCards"></div>
+
+          <div class="overview-grid">
+            <article class="card leaders">
+              <div class="card-head"><div class="card-title">Market Leaders</div><div class="segment range-set" id="leadersRange"><button data-range="7D">7D</button><button class="active" data-range="24H">24H</button></div></div>
+              <div class="leader-visual"><div class="leader-bars" id="leaderBars"></div><div class="bar-dates"><span id="leadersLabel">24h change</span><span id="leadersDate"></span></div></div>
+              <div id="leaderRows"></div>
+            </article>
+
+            <article class="card portfolio">
+              <div class="card-head">
+                <div><div class="card-title">Bitcoin · BTC-USDT-SWAP</div><div class="portfolio-value" id="btcBig">$—</div><div class="portfolio-note" id="btcNote"></div></div>
+                <div class="segment range-set" id="chartRange">
+                  <button data-range="12H">12H</button><button data-range="24H">24</button><button data-range="1D">1D</button><button class="active" data-range="7D">7D</button><button data-range="1M">1M</button><button data-range="1Y">1Y</button>
+                </div>
+              </div>
+              <div class="chart-wrap" id="chartWrap">
+                <div class="chart-grid"></div>
+                <svg id="btcChart" viewBox="0 0 520 170" preserveAspectRatio="none" aria-label="Bitcoin price chart"></svg>
+                <div class="tooltip" id="chartTip" hidden></div>
+                <div class="mark-line" id="markLine" hidden></div>
+                <div class="mark-dot" id="markDot" hidden></div>
+                <div class="day-labels" id="dayLabels"></div>
+              </div>
+            </article>
+          </div>
+
+          <article class="card activity">
+            <div class="card-head">
+              <div class="activity-title"><span class="mini-icon">⌁</span><div><div class="card-title">Trade history</div><div class="card-sub" id="tradeSub"></div></div></div>
+              <div class="activity-tools">
+                <label class="small-search"><span>⌕</span><input id="txSearch" placeholder="Search" /></label>
+                <div class="periods range-set" id="txPeriod"><button data-p="12H">12H</button><button data-p="7D">7D</button><button data-p="1M">1M</button><button class="active" data-p="ALL">1Y</button></div>
+                <select class="select" id="txSelect" aria-label="Time range"><option value="24H">24H</option><option value="7D">7D</option><option value="1M">1M</option></select>
+              </div>
+            </div>
+            <div class="table-head"><span></span><span>Pair</span><span>Entry price</span><span>Side</span><span>Exit price</span><span>P&amp;L</span><span>Closed at</span></div>
+            <div id="transactions"></div>
+          </article>
+        </div>
+
+        <aside class="side-column">
+          <article class="card balance">
+            <div class="balance-top"><div class="card-title">My Balance</div><div class="network"><i></i> OKX Demo</div></div>
+            <h2 id="balanceVal">— USDT</h2>
+            <div class="balance-meta"><span id="balanceMeta">—</span><span>Demo balance</span></div>
+            <div class="actions">
+              <button class="action primary" data-action="Deposit"><svg fill="none" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M16 12H8M12 8v8"/></svg>Deposit</button>
+              <button class="action" data-action="Withdraw">▣ &nbsp; Withdraw</button>
+              <button class="action" data-action="Swap">⇅ &nbsp; Swap</button>
+              <button class="action" data-action="Transfer">⇆ &nbsp; Transfer</button>
+            </div>
+          </article>
+          <article class="card list-card">
+            <div class="card-head"><div class="card-title">Top Assets</div><button class="ellipsis" data-card="assets" aria-label="More options">···</button></div>
+            <div class="list-columns"><span>Assets</span><span>Price</span><span>24h</span></div>
+            <div id="topAssets"></div>
+          </article>
+          <article class="card list-card">
+            <div class="card-head"><div class="card-title">Market Snapshot</div><button class="ellipsis" data-card="snapshot" aria-label="More options">···</button></div>
+            <div class="gain-columns"><span>Coin</span><span>Pair</span><span>Price</span><span>24h</span></div>
+            <div id="snapshotRows"></div>
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ TRADE ============ -->
+    <section class="view" data-view="trade">
+      <div class="layout">
+        <div class="main-column">
+          <article class="card">
+            <div class="card-head">
+              <div class="activity-title"><span class="mini-icon">◉</span><div><div class="card-title">Live decisions</div><div class="card-sub" id="feedSub"></div></div></div>
+              <div class="activity-tools"><label class="small-search"><span>⌕</span><input id="feedSearch" placeholder="Filter HOLD / LONG / SHORT" /></label></div>
+            </div>
+            <div class="feed" id="decisionFeed"></div>
+          </article>
+        </div>
+        <aside class="side-column">
+          <article class="card balance">
+            <div class="card-head"><div><div class="card-title">Strategy</div><div class="card-sub">How Laya decides</div></div></div>
+            <div class="about-body" style="padding-top:0">
+              <div class="step"><span class="n">1</span><div>Reads the latest <b>1-minute BTC-USDT-SWAP</b> candles from OKX demo.<small>~$50 notional per trade</small></div></div>
+              <div class="step"><span class="n">2</span><div>A fine-tuned decision model scores <b>LONG / HOLD / SHORT</b> with calibrated confidence.<small>Only acts above its confidence threshold</small></div></div>
+              <div class="step"><span class="n">3</span><div>One position at a time, hard risk guards on every order.<small>Paper money — learning before earning</small></div></div>
+            </div>
+          </article>
+          <article class="card list-card">
+            <div class="card-head"><div class="card-title">Session</div></div>
+            <div id="sessionRows" style="padding:0 16px 12px;font-size:10px"></div>
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ MARKET ============ -->
+    <section class="view" data-view="market">
+      <article class="card">
+        <div class="card-head">
+          <div class="activity-title"><span class="mini-icon">◈</span><div><div class="card-title">Market overview</div><div class="card-sub" id="marketSub">Live spot prices · USDT pairs</div></div></div>
+          <div class="activity-tools"><label class="small-search"><span>⌕</span><input id="marketSearch" placeholder="Search coins" /></label></div>
+        </div>
+        <div class="mkt-head"><span></span><span>Coin</span><span>Price</span><span>24h</span><span>24h high</span><span>24h low</span></div>
+        <div id="marketRows"></div>
+      </article>
+    </section>
+
+    <!-- ============ ANALYTICS ============ -->
+    <section class="view" data-view="analytics">
+      <div class="analytics-grid">
+        <article class="card">
+          <div class="card-head"><div><div class="card-title">Decision mix</div><div class="card-sub" id="mixSub"></div></div></div>
+          <div class="mix">
+            <div class="mix-bars" id="mixBars"></div>
+            <div class="mix-total"><strong id="mixTotal">—</strong><span>decisions</span></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><div class="card-title">Confidence — recent decisions</div><div class="card-sub">Model confidence per decision, newest first</div></div></div>
+          <div class="feed" id="confFeed" style="max-height:300px;overflow:auto"></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><div class="card-title">Model card — v4</div><div class="card-sub">Offline evaluation before going live</div></div></div>
+          <div class="spec" id="modelSpec"></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><div class="card-title">Fee-aware backtest</div><div class="card-sub">Net of fees, per trade</div></div></div>
+          <div class="spec" id="backtestSpec"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ PORTFOLIO ============ -->
+    <section class="view" data-view="portfolio">
+      <div class="pf-grid">
+        <article class="card pf-stat"><span>Demo balance</span><strong id="pfBalance">—</strong></article>
+        <article class="card pf-stat"><span>Realized P&amp;L</span><strong id="pfPnl">—</strong></article>
+        <article class="card pf-stat"><span>Closed trades</span><strong id="pfTrades">—</strong></article>
+      </div>
+      <article class="card activity">
+        <div class="card-head">
+          <div class="activity-title"><span class="mini-icon">⌁</span><div><div class="card-title">All trades</div><div class="card-sub" id="pfSub"></div></div></div>
+          <div class="activity-tools"><label class="small-search"><span>⌕</span><input id="pfSearch" placeholder="Search" /></label></div>
+        </div>
+        <div class="table-head"><span></span><span>Pair</span><span>Entry price</span><span>Side</span><span>Exit price</span><span>P&amp;L</span><span>Closed at</span></div>
+        <div id="pfTransactions"></div>
+      </article>
+    </section>
+
+    <!-- ============ OTC / ABOUT ============ -->
+    <section class="view" data-view="otc">
+      <div class="about-grid">
+        <article class="card">
+          <div class="card-head"><div><div class="card-title">About Laya</div><div class="card-sub">The bot behind this dashboard</div></div></div>
+          <div class="about-body">
+            <h4>What is this?</h4>
+            Laya is an autonomous trading bot that trades <b>BTC-USDT-SWAP</b> on an <b>OKX demo account</b> — paper money, real market data. This dashboard is its public command center: every number here comes from live market APIs or Laya's own logs. Nothing is mocked.
+            <h4>How the data flows</h4>
+            Laya runs on a cloud notebook and logs every decision. Every 15 minutes, a GitHub Actions job pulls the latest logs, rebuilds <code>data/laya.json</code>, and this page renders it. Prices and charts stream straight from the Binance public API in your browser.
+            <h4>Demo discipline</h4>
+            No real money is involved or authorized. The bot is in a one-week evaluation trial — if the edge doesn't survive live markets, it doesn't get funded. That's the whole point of the demo.
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><div class="card-title">Pipeline</div><div class="card-sub">Fully automated, free tier</div></div></div>
+          <div>
+            <div class="step"><span class="n">1</span><div><b>Decide</b><br /><small>Fine-tuned model scores every 1-minute candle</small></div></div>
+            <div class="step"><span class="n">2</span><div><b>Log</b><br /><small>Decisions + fills appended to the run log</small></div></div>
+            <div class="step"><span class="n">3</span><div><b>Sync</b><br /><small>GitHub Actions rebuilds the data file every 15 min</small></div></div>
+            <div class="step"><span class="n">4</span><div><b>Render</b><br /><small>This page — hosted free on GitHub Pages</small></div></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+  <footer class="footer"><span>Laya · OKX demo</span><span id="footMeta">—</span></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+<script src="app.js"></script>
+</body>
+</html>

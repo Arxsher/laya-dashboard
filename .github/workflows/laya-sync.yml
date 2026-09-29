@@ -1,0 +1,46 @@
+# Laya dashboard sync — runs every 15 minutes, entirely on GitHub's free tier.
+#
+# It pulls the latest Laya run logs from Kaggle, rebuilds data/laya.json with
+# real decisions/trades, and commits it back. The dashboard (GitHub Pages)
+# picks it up on the next page load / auto-refresh. No server, no cost.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   KAGGLE_USERNAME  - your Kaggle username
+#   KAGGLE_KEY       - your Kaggle API key (https://www.kaggle.com/settings/account -> API)
+
+name: laya-sync
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Kaggle CLI
+        run: pip install kaggle
+
+      - name: Rebuild data/laya.json
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: python scripts/sync_laya.py --kernel arxsher/laya-demo-trader
+
+      - name: Commit if changed
+        run: |
+          git config user.name "laya-sync"
+          git config user.email "laya-sync@users.noreply.github.com"
+          git add data/laya.json
+          git diff --cached --quiet || git commit -m "sync laya data $(date -u +%FT%TZ)"
+          git push
